@@ -6,74 +6,60 @@ template<typename T>
 class TPQueue {
   // Сюда помещается описание структуры "Очередь с приоритетами"
  private:
-    T *arr;
-    int size;
-    int begin, end;
-    int count;
+T* arr;
+int size;
+int begin, end;
+int count;
+int stepBack(int index) {
+int res = --index;
+if (res < 0)
+res += size + 1;
+return res;
+}
+int stepForward(int index) {
+int res = ++index;
+if (res > size)
+res -= size + 1;
+return res;
+}
  public:
-    TPQueue();
-    ~TPQueue();
-    void push(const T &);
-    T pop();
-    T get() const;
-    bool isEmpty() const;
-    bool isFull() const;
-};
-template<typename T>
-TPQueue<T>::TPQueue() : size(100),
+TPQueue() :
+size(100),
 begin(0), end(0), count(0) {
-    arr = new T[size + 1];
+arr = new T[size + 1];
 }
-template<typename T>
-TPQueue<T>::~TPQueue() {
-  delete [] arr;
+~TPQueue() {
+delete[] arr;
 }
-template<typename T>
-void TPQueue<T>::push(const T & item) {
-  assert(count < size);
-  if (end != 0) {
-      for (int i = end - 1; i > -1; i--) {
-          if (arr[i].prior >= item.prior) {
-              arr[i + 1] = item;
-              continue;
-          }
-          if (arr[i].prior < item.prior) {
-              arr[i + 1] = arr[i];
-              if (i == begin)
-                  arr[i] = item;
-              continue;
-          }
-      }
-  } else {
-      arr[begin] = item;
-  }
-  count++;
-  end++;
-  if (end > size)
-    end -= size + 1;
+void push(const T & item) {
+assert(count < size);
+int cur = end;
+while (begin != cur && item.prior > arr[stepBack(cur)].prior) {
+arr[cur] = arr[stepBack(cur)];
+cur = stepBack(cur);
 }
-template<typename T>
-T TPQueue<T>::pop() {
+arr[cur] = item;
+end = stepForward(end);
+count++;
+}
+T pop() {
 assert(count > 0);
-T item = arr[begin++];
+T item = arr[begin];
 count--;
-if (begin > size)
-begin -= size + 1;
+begin = stepForward(begin);
 return item;
 }
-template<typename T>
-T TPQueue<T>::get() const {
-  assert(count > 0);
-  return arr[begin];
+T get() const {
+assert(count > 0);
+return arr[begin];
 }
-template<typename T>
-bool TPQueue<T>::isEmpty() const {
-  return count == 0;
+bool isEmpty() const {
+return count == 0;
 }
-template<typename T>
-bool TPQueue<T>::isFull() const {
+bool isFull() const {
 return count == size;
 }
+};
 struct SYM {
   char ch;
   int  prior;
