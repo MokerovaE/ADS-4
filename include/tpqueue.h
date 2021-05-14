@@ -6,7 +6,7 @@
 template<typename T>
 class TPQueue {
   // Сюда помещается описание структуры "Очередь с приоритетами"
-  private:
+ private:
 T* arr;
 int size;
 int begin, end;
